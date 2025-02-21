@@ -168,7 +168,7 @@ func resign(groupCode, senderUin int64) (msg message.Message, err error) {
 }
 
 // play 走棋
-func play(senderUin int64, groupCode int64, moveStr string) (msg message.Message, err error) {
+func play(groupCode, senderUin int64, moveStr string) (msg message.Message, err error) {
 	msg = message.Message{message.At(senderUin)}
 	// 检查对局是否存在
 	room, ok := chessRoomMap.Load(groupCode)
@@ -235,7 +235,7 @@ func play(senderUin int64, groupCode int64, moveStr string) (msg message.Message
 		chessRoomMap.Store(groupCode, room)
 	}
 	// 生成棋盘图片
-	var boardImgEle message.MessageSegment
+	var boardImgEle message.Segment
 	if !room.isBlindfold {
 		boardImgEle, err = getBoardElement(groupCode)
 		if err != nil {
@@ -343,7 +343,7 @@ func cleanUserRate(senderUin int64) (msg message.Message, err error) {
 }
 
 // createGame 创建游戏
-func createGame(isBlindfold bool, groupCode int64, senderUin int64, senderName string) (msg message.Message, err error) {
+func createGame(isBlindfold bool, groupCode, senderUin int64, senderName string) (msg message.Message, err error) {
 	room, ok := chessRoomMap.Load(groupCode)
 	if !ok {
 		chessRoomMap.Store(groupCode, &chessRoom{
@@ -400,7 +400,7 @@ func createGame(isBlindfold bool, groupCode int64, senderUin int64, senderName s
 	room.blackPlayer = senderUin
 	room.blackName = senderName
 	chessRoomMap.Store(groupCode, room)
-	var boardImgEle message.MessageSegment
+	var boardImgEle message.Segment
 	if !room.isBlindfold {
 		boardImgEle, err = getBoardElement(groupCode)
 		if err != nil {
@@ -442,7 +442,7 @@ func abortGame(room chessRoom, groupCode int64, hint string) (message.Message, e
 }
 
 // getBoardElement 获取棋盘图片的消息内容
-func getBoardElement(groupCode int64) (imgMsg message.MessageSegment, err error) {
+func getBoardElement(groupCode int64) (imgMsg message.Segment, err error) {
 	fontdata, err := file.GetLazyData(text.GNUUnifontFontFile, control.Md5File, true)
 	if err != nil {
 		return
